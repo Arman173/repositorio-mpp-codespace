@@ -43,6 +43,29 @@ void printMatrix(Matrix *m) {
     }
 }
 
+// Sacamos la lógica a una función y le aplicamos el atributo
+// -------------------------------------------------------------
+__attribute__((optimize("unroll-loops")))
+void multiplicarMatrices(Matrix *A, Matrix *B, Matrix *C) {
+    int i, j, k;
+    
+    // Optimizacion extra: Guardamos punteros locales para evitar
+    // indirecciones constantes a A->data, B->data, etc.
+    int **dataA = A->data;
+    int **dataB = B->data;
+    int **dataC = C->data;
+
+    for (i = 0; i < A->rows; i++) {
+        for (j = 0; j < B->cols; j++) {
+            int suma = 0; // Usamos variable temporal (registro)
+            for (k = 0; k < A->cols; k++) {
+                suma += dataA[i][k] * dataB[k][j];
+            }
+            dataC[i][j] = suma;
+        }
+    }
+}
+
 int main(int argc, char* argv[]) {
     // creamos las matrices A, B y C
     Matrix A, B, C;
@@ -76,14 +99,7 @@ int main(int argc, char* argv[]) {
     clock_gettime(CLOCK_MONOTONIC, &inicio);
     
     // ---- Algoritmo de multiplicación de matrices ----
-    for (int i = 0; i < A.rows; i++) {
-        for (int j = 0; j < B.cols; j++) {
-            C.data[i][j] = 0;
-            for (int k = 0; k < A.cols; k++) {
-                C.data[i][j] += A.data[i][k] * B.data[k][j];
-            }
-        }
-    }
+    multiplicarMatrices(&A, &B, &C);
     // -------- FIN --------
     
     // Obtener tiempo final ----------------------------------------
