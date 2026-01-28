@@ -1,2 +1,8 @@
 # carpeta de ejecutables
 /out/
+
+# carpeta de imagenes
+/imgs/
+
+# cache de python
+GraphAMY_PY/__pycache__/
